@@ -7,7 +7,7 @@ ADNUG presentation - 'Whats New in OWASP 2017'
 ## How this repo works
 This repo is tagged at different stages of development to help you see something go from completely vulnerable to being less completely vulnerable.
 
-The way I demonstrated this was to deploy v1.0 to a guest linux VM, and then attack this from a seperate VM, but you could totally just do all of that on your development machine if thats how you want to roll.
+The way I demonstrated this was to deploy tag v1.0 to a guest linux VM, and then attack this from a seperate VM, but you could totally just do all of that on your development machine if thats how you want to roll.
 
 I then just checked out at the various places that are represented by the version tags you'll read about below, in order to show the fixes and talk through the code changes
 
@@ -23,7 +23,7 @@ They've asked us nicely to give them a free security code review. Do you accept?
 #### Y U No React/Angular/Vue?
 > I needed to get this out quickly and aspnet mvc is home turf for me, however I also wanted to make the security architecture the focus here, and I think the simplicity of the front end to show the flaws off clearly is important. It's a 'back to basics' thing.
 
-### Version Tags of interest
+### Release History
 #### v1.0
 This is their first cut, there are several vulnerabilities here and the code is atrocious!! Almost everything is so very wrong. Inspired by anti-patterns I've seen on bug bounties, advice on stack overflow, and real world things I've had to fix for people.    
 
@@ -82,6 +82,10 @@ This directory contains example payloads to demonstrate the vulnerabilities in t
 
 ### environment
 This directory contains an example centralised logging server, so that we can start to solve A10: Insufficient Logging and Monitoring
+
+### slides
+Here you'll find a copy of my slide deck that I used to present this. PDF Format
+
 ## Build / Deploy
 
 ```
@@ -103,6 +107,8 @@ dotnet vulnerable.dll
 # Browse to http://localhost:5000 to begin exploring the application
 ```
 #### Tested on the following platforms
+- Mac OS X High Sierra
+- Devuan Linux (Jessie Stable)
 
 ## Normal operation
 1. Click Apply Now
