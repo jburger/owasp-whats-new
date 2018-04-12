@@ -1,0 +1,33 @@
+# PLEASE NOTE: This compose script isn't setup for production. 
+#              It doesn't mount any volumes, so it has amnesia..
+#              It doesn't load balance elastic search, mongodb or the web tier
+#              It will help you play with graylog and maybe help show 
+#              your team how awesome centralised, correlated logging is.
+#
+# HOW TO USE:  1. Install Docker CE for your environment, cd into this directory
+#              2. docker-compose up
+#              3. browse to localhost:9000
+#              4. send GELF compliant UDP packets laced with log data to 12201/udp
+
+# documentation: https://hub.docker.com/r/graylog2/server/
+version: '2'
+services:
+  some-mongo:
+    image: "mongo:3"
+  some-elasticsearch:
+    image: "elasticsearch:2"
+    command: "elasticsearch -Des.cluster.name='graylog'"
+  graylog:
+    image: graylog2/server:2.1.1-1
+    environment:
+      # set this to some random string
+      GRAYLOG_PASSWORD_SECRET: random_string
+      # set this to some SHA2 password hash, see documentation link above
+      GRAYLOG_ROOT_PASSWORD_SHA2: not_a_real_password_hash_must_be_changed
+      GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
+    links:
+      - some-mongo:mongo
+      - some-elasticsearch:elasticsearch
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"

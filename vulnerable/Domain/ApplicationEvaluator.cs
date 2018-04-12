@@ -10,9 +10,16 @@ namespace vulnerable.Domain
     public class ApplicationEvaluator : IApplicationEvaluator {
         private const string XPATH_TOTAL_AMOUNT = @"/bankFile/account/currentAmount";
         private const string XPATH_ACC_NAME = @"/bankFile/account/name";
+        private readonly ILogger<ApplicationEvaluator> logger;
+
+        public ApplicationEvaluator(ILogger<ApplicationEvaluator> logger)
+        {
+            this.logger = logger;
+        }
 
         public EvaluationResult Evaluate(string firstName, string lastName, IFormFile bankFile)
         {
+            logger.LogDebug($"Evaluating bankfile for {firstName} {lastName}");
             if (bankFile == null || bankFile.Length == 0)
             {
                 throw new ArgumentNullException(nameof(bankFile));
@@ -35,16 +42,21 @@ namespace vulnerable.Domain
                 } 
 
                 return new EvaluationResult(EvaluationStatus.Rejected, "Please check your bank statement!");
-            } catch(Exception)
+            } catch(Exception ex)
             {
-                // GULP!
-                return new EvaluationResult(EvaluationStatus.Rejected, "Oh Snap! Something went wrong. Please call our IT administrator on 55555555.");
+                //sometimes it can be handy to give support a breadcrumb
+                var reference = Guid.NewGuid().ToString().Substring(0, 5);
+                logger.LogError($"bankFile content: {xDoc.InnerText}\r\nerror: {ex.Message}\r\nref: {reference}", ex);
+                return new EvaluationResult(EvaluationStatus.Rejected, $"Oh Snap! Something went wrong. Please call us on 55555555. reference: {reference}");
             }
         }
 
-        private static XmlDocument ParseBankFile(IFormFile bankFile)
+        private XmlDocument ParseBankFile(IFormFile bankFile)
         {
+            //copied from our internal intranet code base
             var xDoc = new XmlDocument();
+            xDoc.XmlResolver = new XmlUrlResolver();
+
             var settings = new XmlReaderSettings() 
             {
                 MaxCharactersFromEntities = 0,
@@ -59,9 +71,10 @@ namespace vulnerable.Domain
                 {
                     xDoc.Load(reader);
                 }
-                catch(Exception)
+                catch(Exception ex)
                 {
-                    //the boss said we have to write bug free code
+                    //the boss said need to know when hackers are trying to get us
+                    logger.LogError(ex, ex.Message);
                 }
             }
             return xDoc;

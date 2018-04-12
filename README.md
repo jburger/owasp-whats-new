@@ -25,7 +25,7 @@ They've asked us nicely to give them a free security code review. Do you accept?
 
 ### Version Tags of interest
 #### v1.0
-This is their first cut, there are several vulnerabilities here and the code is atrocious!!
+This is their first cut, there are several vulnerabilities here and the code is atrocious!! Almost everything is so very wrong. Inspired by anti-patterns I've seen on bug bounties, advice on stack overflow, and real world things I've had to fix for people.    
 
 >*Yes, I felt like having a shower after writing this code, but I guess it is for science...*
 
@@ -38,7 +38,7 @@ Check this tag out to begin testing things for yourself
 
 #### v1.0.2
 **Bug Fixes**
-- fixes for Insecure Deserialisation, Broken Authentication and Broken Access Control. There was some really bad cookie handling - replaced with standard parts of dotnet core to achieve:
+- fixes for Insecure Deserialisation, Broken Authentication and Broken Access Control.  Replaced with standard parts of dotnet core to achieve:
     - Claims based Authentication, with Cookies
     - Role based Authorisation policies
 

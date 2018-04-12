@@ -18,15 +18,19 @@ namespace vulnerable.Controllers
     {
         private readonly IOptions<ApplicationSettings> settings;
         private readonly List<User> users;
-        public AccountController(IOptions<ApplicationSettings> settings)
+        private readonly ILogger<AccountController> logger;
+
+        public AccountController(IOptions<ApplicationSettings> settings, ILogger<AccountController> logger)
         {
             this.settings = settings;
             this.users = settings.Value.Users;
+            this.logger = logger;
         }
 
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
+            logger.LogInformation($"Successful logout for {User.Identity.Name}");
             return RedirectToAction("Index", "Home");
         }
 
@@ -40,19 +44,25 @@ namespace vulnerable.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(User user, string returnUrl)
         {
+            //todo: rate limiting
+            //todo: weak password checks (e.g. passwords API from HBIP)
             if (user == null)
             {
+                logger.LogDebug("No user details were posted, redirecting to /Account/Login");
                 return RedirectToAction("Login", "Account", new { invalidUser=true });
             }
             var matchedUser = users.FirstOrDefault(u => u.Username == user.Username || u.MobilePhone == user.Username);
 
+            logger.LogInformation($"Login attempt for {user.Username}");
             if(matchedUser == null) 
             {
+                logger.LogInformation($"Couldn't find {user.Username}");
                 return RedirectToAction("Login", "Account", new { invalidUser=true });
             }
 
             if (matchedUser?.Password != user.Password)
             {
+                logger.LogInformation($"Invalid password attempt for user {user.Username}");
                 return RedirectToAction("Login", "Account", new { invalidUser=true });
             }
 
@@ -62,6 +72,7 @@ namespace vulnerable.Controllers
                 .SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(identity));
+            logger.LogInformation($"Successful login for: {user.Username} ");
             return ReturnToUrl(returnUrl);
         }
 

@@ -6,10 +6,12 @@ using vulnerable.Domain;
 namespace vulnerable.Controllers {
     public class ApplicationController : Controller {
         private IApplicationEvaluator applicationEvaluator;
+        private readonly ILogger<ApplicationController> logger;
 
-        public ApplicationController(IApplicationEvaluator applicationEvaluator)
+        public ApplicationController(IApplicationEvaluator applicationEvaluator, ILogger<ApplicationController> logger)
         {
             this.applicationEvaluator = applicationEvaluator;
+            this.logger = logger;
         }
 
         public IActionResult Index() 
@@ -19,18 +21,20 @@ namespace vulnerable.Controllers {
         }
 
         [HttpPost]
-        public IActionResult Index(IFormFile bankFile, string firstName, string lastname)
+        public IActionResult Index(IFormFile bankFile, string firstName, string lastName)
         {
             EvaluationResult result = 
-                applicationEvaluator.Evaluate(firstName, lastname, bankFile);
+                applicationEvaluator.Evaluate(firstName, lastName, bankFile);
 
             if(result.Status == EvaluationStatus.Accepted) 
             {
+                logger.LogInformation($"Accepted application for {firstName} {lastName}");
                 return RedirectToAction("Accept", "Application", new {firstName});
             } 
             else 
             {
                 TempData["Reason"] = result.RejectReason;
+                logger.LogInformation($"Rejected application for {firstName} {lastName}");
                 return RedirectToAction("Rejected", "Application", new {firstName, result.RejectReason});
             }
         }

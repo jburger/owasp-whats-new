@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Sinks.Graylog;
 using vulnerable.Domain;
 using vulnerable.Models;
 
@@ -18,6 +20,15 @@ namespace vulnerable
     {
         public Startup(IConfiguration configuration)
         {
+            Log.Logger = 
+                new LoggerConfiguration()
+                    .Enrich.FromLogContext()
+                    .WriteTo.Graylog(new GraylogSinkOptions 
+                    {
+                        HostnameOrAddress = configuration.GetValue<string>("application:grayloghost"),
+                        Port = configuration.GetValue<int>("application:graylogport")
+                    })
+                    .CreateLogger();
             Configuration = configuration;
         }
 
@@ -31,7 +42,8 @@ namespace vulnerable
             services.AddMvc();
             services.AddSession();
             services.AddAntiforgery();
-            services.AddLogging();
+            services.AddLogging(logBuilder => logBuilder.AddSerilog(dispose: true));
+
             services
                 .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie((options) => {
