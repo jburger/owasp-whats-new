@@ -22,7 +22,6 @@ namespace vulnerable.Controllers
     public class AccountController : Controller 
     {
         private readonly IOptions<ApplicationSettings> settings;
-        private readonly string secret;
         private readonly List<User> users;
         private readonly string COOKIE_KEY = "PiggyBankCo";
 
@@ -39,10 +38,9 @@ namespace vulnerable.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl = null, bool invalidPass = false, bool invalidUser = false) {
+        public IActionResult Login(string returnUrl = null, bool invalidUser = false) {
             TempData["returnUrl"] = returnUrl;
             ViewBag.invalidUser = invalidUser;
-            ViewBag.invalidPass = invalidPass;
             return View();
         }
 
@@ -81,7 +79,7 @@ namespace vulnerable.Controllers
 
             if (matchedUser?.Password != user.Password)
             {
-                return RedirectToAction("Login", "Account", new { invalidPass=true });
+                return RedirectToAction("Login", "Account", new { invalidUser=true });
             }
 
             EstablishIdentity(matchedUser, Response);

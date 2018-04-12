@@ -4,12 +4,9 @@
 
 <div class="form-group" style="margin-top:25px">
     @if(ViewBag.invalidUser) {
-        <p style="color: red">Invalid Username</p>
+        <p style="color: red">Invalid Username or Password</p>
     }
 
-    @if(ViewBag.invalidPass) {
-        <p style="color: red">Invalid Password</p>
-    }
     <div class="form-group">
         <input class="form-control" name="username" type="text" placeholder="Phone or Username" />
     </div>
