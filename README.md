@@ -117,3 +117,11 @@ dotnet vulnerable.dll
 ## Contributing
 
 Found another vulnerability? Do my fixes need fixing? Log an issue or fling me a PR!
+
+## Further reading
+- [OWASP TOP 10 DATA](https://github.com/OWASP/Top10/tree/master/2017/datacall/analysis)
+- [TOP 10 HTML VERSION](https://www.owasp.org/index.php/Category:OWASP_Top_Ten_2017_Project)
+- [ADVANCED XXE](https://www.blackhillsinfosec.com/xml-external-entity-beyond-etcpasswd-fun-profit/)
+- [XXE  PREVENTION CHEATSHEET](https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet)
+- [GRAYLOG](https://www.graylog.org/)
+- [SONARQUBE](https://www.sonarqube.org/)
