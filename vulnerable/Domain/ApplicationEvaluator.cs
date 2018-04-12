@@ -55,17 +55,8 @@ namespace vulnerable.Domain
         {
             //copied from our internal intranet code base
             var xDoc = new XmlDocument();
-            xDoc.XmlResolver = new XmlUrlResolver();
 
-            var settings = new XmlReaderSettings() 
-            {
-                MaxCharactersFromEntities = 0,
-                MaxCharactersInDocument = 0,
-                DtdProcessing = DtdProcessing.Parse,
-                XmlResolver = new XmlUrlResolver()
-            };
-
-            using (var reader = XmlReader.Create(bankFile.OpenReadStream(), settings))
+            using (var reader = XmlReader.Create(bankFile.OpenReadStream()))
             {
                 try 
                 {

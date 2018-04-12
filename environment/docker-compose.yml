@@ -21,9 +21,9 @@ services:
     image: graylog2/server:2.1.1-1
     environment:
       # set this to some random string
-      GRAYLOG_PASSWORD_SECRET: random_string
+      GRAYLOG_PASSWORD_SECRET: 
       # set this to some SHA2 password hash, see documentation link above
-      GRAYLOG_ROOT_PASSWORD_SHA2: not_a_real_password_hash_must_be_changed
+      GRAYLOG_ROOT_PASSWORD_SHA2: 
       GRAYLOG_WEB_ENDPOINT_URI: http://127.0.0.1:9000/api
     links:
       - some-mongo:mongo
