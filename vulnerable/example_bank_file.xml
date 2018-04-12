@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<bankFile>
+  <account>
+      <id>A72818283912</id>
+      <currentAmount>1000.00</currentAmount>
+      <name>Jim's Bank Account</name>
+      <transactions>
+        <transaction id="1234" amount="1024.00" account="A0192910129" datetime="20180101T001200Z"/>
+        <transaction id="1234" amount="-6.00" account="A0192910129" datetime="20180101T001200Z"/>
+        <transaction id="1234" amount="-6.00" account="A0192910129" datetime="20180101T001200Z"/>
+        <transaction id="1234" amount="-6.00" account="A0192910129" datetime="20180101T001200Z"/>
+        <transaction id="1234" amount="-6.00" account="A0192910129" datetime="20180101T001200Z"/>
+      </transactions>
+  </account>
+</bankFile>

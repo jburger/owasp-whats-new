@@ -1,0 +1,22 @@
+<div class="container">
+
+<form class="col-md-4" asp-controller="Account" asp-action="Login" method="POST">
+
+<div class="form-group" style="margin-top:25px">
+    @if(ViewBag.invalidUser) {
+        <p style="color: red">Invalid Username</p>
+    }
+
+    @if(ViewBag.invalidPass) {
+        <p style="color: red">Invalid Password</p>
+    }
+    <div class="form-group">
+        <input class="form-control" name="username" type="text" placeholder="Phone or Username" />
+    </div>
+    <div class="form-group">
+        <input class="form-control" name="password" type="password" placeholder="Password"/>
+    </div>
+    <input class="btn btn-primary" name="login" type="submit" value="Login"/>
+</div>
+</form>
+</div>

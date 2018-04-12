@@ -1,0 +1,37 @@
+<div class="col-md-6">
+    <h3>Your Profile</h3>
+    <form asp-controller="Account" asp-action="Profile" method="POST">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input name="username" class="form-control" type="text" placeholder="username" value="@ViewBag.Username"/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input name="password" class="form-control" type="password" placeholder="password" value=""/>
+        </div>
+        <div class="form-group">
+            <label for="passwordConfirm">Confirm</label>
+            <input name="passwordConfirm" class="form-control" type="password" placeholder="confirm password" value=""/>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input name="email" class="form-control" type="text" placeholder="email address" value="@ViewBag.Email"/>
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="mobilePhone">Mobile Phone</label>
+            <input name="mobilePhone" class="form-control" type="text" placeholder="phone number" value="@ViewBag.MobilePhone"/>
+        </div>
+        <input class="btn btn-success" type="submit" value="Update" />
+    </form>
+</div>
+@if(ViewBag.Role == "Administrator") {
+    <div class="col-md-6 alert alert-danger" style="margin-top: 10em">
+        <p>Administrator Account</p>
+    </div>
+} else {
+    <div class="col-md-6 alert alert-success" style="margin-top: 5em">
+        <p>Std. User Account</p>
+    </div>
+}
+<div style="clear: both; padding-top: 3em" />
