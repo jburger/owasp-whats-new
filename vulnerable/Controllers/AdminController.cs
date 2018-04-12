@@ -13,17 +13,14 @@ using vulnerable.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using vulnerable.Domain;
 
 namespace vulnerable.Controllers
 {
+    [Authorize(Policy = "RequireAdministratorRole")]
     public class AdminController : Controller
     {
         public IActionResult Index()
         {
-            if (!Utils.IsAdmin(Request)) {
-                return NotFound();
-            }
             return View();
         }
     }

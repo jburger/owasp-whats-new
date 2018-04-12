@@ -37,13 +37,13 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Application" asp-action="Index">Apply Now</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    @if(ViewBag.IsAdmin) {
-                        <li><a asp-controller="Admin" asp-action="Index">Admin Only</a></li>
-                    }
-                    @if(ViewBag.IsUser) {
+
+                    @if(User.Identity.IsAuthenticated) {
                         <li><a asp-area="" asp-controller="Account" asp-action="Profile">Profile</a></li>
                         <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
-                        
+                        @if(User.IsInRole("Administrator")) {
+                            <li><a asp-controller="Admin" asp-action="Index">Admin Only</a></li>
+                        }
                     } else {
                         <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
                     }

@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using vulnerable.Domain;
-using vulnerable.Filters;
 using vulnerable.Models;
 
 namespace vulnerable
@@ -29,12 +28,21 @@ namespace vulnerable
         {
             ConfigureDependencies(services);
             services.Configure<ApplicationSettings>(Configuration.GetSection("Application"));
-            services.AddMvc(config => {
-                config.Filters.Add(new AuthorizationFilter());
-            });
+            services.AddMvc();
             services.AddSession();
             services.AddAntiforgery();
             services.AddLogging();
+            services
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie((options) => {
+                    options.LoginPath = "/account/login";
+                    options.LogoutPath = "/account/logout";
+                });
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Administrator"));
+                options.AddPolicy("RequireAuthenticatedUser", policy => policy.RequireRole("User", "Administrator"));
+            });
         }
 
         public void ConfigureDependencies(IServiceCollection services) 
@@ -45,7 +53,6 @@ namespace vulnerable
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

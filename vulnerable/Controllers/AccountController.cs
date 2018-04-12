@@ -11,11 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Security.Cryptography;
-using System.Text;
-using vulnerable.Domain;
 
 namespace vulnerable.Controllers 
 {
@@ -23,17 +18,15 @@ namespace vulnerable.Controllers
     {
         private readonly IOptions<ApplicationSettings> settings;
         private readonly List<User> users;
-        private readonly string COOKIE_KEY = "PiggyBankCo";
-
         public AccountController(IOptions<ApplicationSettings> settings)
         {
             this.settings = settings;
             this.users = settings.Value.Users;
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            Response.Cookies.Delete(COOKIE_KEY);
+            await HttpContext.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 
@@ -44,27 +37,8 @@ namespace vulnerable.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Profile() {
-            var user = Utils.GetIdentity(Request);
-
-            if(user == null) 
-                return RedirectToAction("Index", "Home");
-            ViewBag.Username = user.Username;
-            ViewBag.Email = user.Email;
-            ViewBag.MobilePhone = user.MobilePhone;
-            ViewBag.Role = user.Type == UserType.Admin ? "Administrator" : "User";
-
-            return View();
-        }
-
         [HttpPost]
-        public IActionResult Profile(User user) {
-            return Ok(); //not necessary for the purposes of the demonstration      
-        }
-
-        [HttpPost]
-        public IActionResult Login(User user, string returnUrl)
+        public async Task<IActionResult> Login(User user, string returnUrl)
         {
             if (user == null)
             {
@@ -82,19 +56,43 @@ namespace vulnerable.Controllers
                 return RedirectToAction("Login", "Account", new { invalidUser=true });
             }
 
-            EstablishIdentity(matchedUser, Response);
+            ClaimsIdentity identity = EstablishIdentity(matchedUser);
+
+            await HttpContext
+                .SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity));
             return ReturnToUrl(returnUrl);
         }
 
-        private void EstablishIdentity(User user, HttpResponse response)
-        {
-            string cookie = CreateCookie(user);
-            response.Cookies.Append(COOKIE_KEY, cookie, new CookieOptions
-            {
-                Path = "/",
-                HttpOnly = false
-            });
+        [Authorize(Policy="RequireAuthenticatedUser")]
+        [HttpGet]
+        public IActionResult Profile() {
+            ViewBag.Username = User.Identity.Name;
+            ViewBag.Email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            ViewBag.MobilePhone = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.MobilePhone)?.Value;
+            ViewBag.Role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            return View();
         }
+
+        [Authorize(Policy="RequireAuthenticatedUser")]
+        [HttpPost]
+        public IActionResult Profile(User user) {
+            return Ok(); //not necessary for the purposes of the demonstration      
+        }
+
+        
+        private static ClaimsIdentity EstablishIdentity(User user)
+        {
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
+            identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+            identity.AddClaim(new Claim(ClaimTypes.MobilePhone, user.MobilePhone));
+            identity.AddClaim(new Claim(ClaimTypes.Role, user.Type == UserType.Admin ? "Administrator" : "User" ));
+            return identity;
+        }
+
         private IActionResult ReturnToUrl(string returnUrl)
         {
             if (returnUrl == null)
@@ -110,19 +108,6 @@ namespace vulnerable.Controllers
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
-        }
-
-        private static string CreateCookie(User user)
-        {
-            //strip out the sensitive data. GDPR is coming.
-            user.Password = "";
-            user.MobilePhone = "";
-            user.Email = "";
-
-            var json = JsonConvert.SerializeObject(user);
-            var buffer = Encoding.UTF8.GetBytes(json);
-            var cookie = Convert.ToBase64String(buffer);
-            return cookie;
         }
     }
 }
